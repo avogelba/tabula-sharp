@@ -76,7 +76,23 @@ namespace Tabula.Extractors
                 return new Table[] { Table.EMPTY };
             }
 
-            List<TextChunk> textChunks = this.verticalRulings == null ? TextElement.MergeWords(textElements) : TextElement.MergeWords(textElements, this.verticalRulings);
+            var allTextElements = page.GetText();
+
+            // calcular la dirección predominante
+            double predominantDirection = allTextElements
+                .GroupBy(te => te.Direction)
+                .OrderByDescending(g => g.Count())
+                .First().Key;
+            var filteredElements = allTextElements
+            .Where(te => te.Direction == predominantDirection)
+            .ToList();
+
+
+            List<TextChunk> textChunks = this.verticalRulings == null ? TextElement.MergeWords(filteredElements) : TextElement.MergeWords(filteredElements, this.verticalRulings);
+
+
+
+
             List<TableLine> lines = TextChunk.GroupByLines(textChunks);
 
             List<double> columns;

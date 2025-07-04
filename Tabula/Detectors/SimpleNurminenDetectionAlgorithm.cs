@@ -183,9 +183,24 @@ namespace Tabula.Detectors
             }
             */
 
+
+            var allTextElements = page.GetText();
+
+            // calcular la dirección predominante
+            double predominantDirection = allTextElements
+                .GroupBy(te => te.Direction)
+                .OrderByDescending(g => g.Count())
+                .First().Key;
+            var filteredElements = allTextElements
+            .Where(te => te.Direction == predominantDirection)
+            .ToList();
+
+
             // now look at text rows to help us find more tables and flesh out existing ones
-            List<TextChunk> textChunks = TextElement.MergeWords(page.GetText());
-            List<TableLine> lines = TextChunk.GroupByLines(textChunks);
+            List<TextChunk> textChunks = TextElement.MergeWords(filteredElements);
+
+            List<TableLine> lines = TextChunk.GroupByLines(textChunks)
+                                        .OrderByDescending(l => l.Top).ToList(); ;
 
             // first look for text rows that intersect an existing table - those lines should probably be part of the table
             foreach (TableLine textRow in lines)
@@ -293,6 +308,8 @@ namespace Tabula.Detectors
 
             return tableSet.ToList();
         }
+
+     
 
         private sealed class TreeSetComparer : IComparer<TableRectangle>
         {
