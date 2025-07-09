@@ -186,11 +186,20 @@ namespace Tabula.Detectors
 
             var allTextElements = page.GetText();
 
-            // calcular la dirección predominante
-            double predominantDirection = allTextElements
-                .GroupBy(te => te.Direction)
-                .OrderByDescending(g => g.Count())
-                .First().Key;
+
+
+            double predominantDirection = 0;
+            
+            if (allTextElements.Any())
+            { 
+
+                // calcular la dirección predominante
+                predominantDirection = allTextElements
+                    .GroupBy(te => te.Direction)
+                    .OrderByDescending(g => g.Count())
+                    .FirstOrDefault()!.Key;
+            }
+
             var filteredElements = allTextElements
             .Where(te => te.Direction == predominantDirection)
             .ToList();
