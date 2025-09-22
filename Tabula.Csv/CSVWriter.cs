@@ -55,7 +55,7 @@ namespace Tabula.Writers
             using (var stream = new MemoryStream())
             using (var sw = new StreamWriter(stream) { AutoFlush = true })
             {
-                new CSVWriter().Write(sw, tables);
+                new CSVWriter(this.delimiter).Write(sw, tables);
 
                 var reader = new StreamReader(stream);
                 stream.Position = 0;
